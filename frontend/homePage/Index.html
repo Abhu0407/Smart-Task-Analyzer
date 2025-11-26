@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Task Analyzer - Home</title>
+    <link rel="stylesheet" href="../navbar/style.css" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <!-- Reusable Navbar -->
+    <header class="navbar-header">
+      <div class="container">
+        <div class="navbar-content">
+          <div class="navbar-left">
+            <a href="/" class="logo-link">
+              <div class="logo-icon-wrapper">
+                <i data-lucide="message-square" class="logo-icon"></i>
+              </div>
+              <h1 class="logo-text">EduAssist AI</h1>
+            </a>
+          </div>
+          <nav id="main-nav" class="main-nav">
+            <a href="/summarize/text" class="nav-link">Text</a>
+            <a href="/summarize/file" class="nav-link">File</a>
+            <a href="/summaries" class="nav-link">Past</a>
+          </nav>
+          <div class="navbar-right">
+            <a href="/settings" class="btn btn-sm">
+              <i data-lucide="settings" class="icon-sm"></i>
+              <span class="sm-hidden">Settings</span>
+            </a>
+            <div id="auth-links" class="auth-links">
+              <a href="/profile" class="btn btn-sm">
+                <i data-lucide="user" class="icon-md"></i>
+                <span class="sm-hidden">Profile</span>
+              </a>
+              <button id="logout-btn" class="btn btn-sm">
+                <i data-lucide="log-out" class="icon-md"></i>
+                <span class="sm-hidden">Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <!-- Section for All Pending Tasks -->
+      <section class="task-section">
+        <div class="section-header">
+          <h1 class="section-title">All Pending Tasks</h1>
+          <div class="sort-container">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select">
+              <option value="smartPriorityScore">Smart Score</option>
+              <option value="priorityScore">Priority Score</option>
+              <option value="due_date">Due Date</option>
+              <option value="importance">Importance</option>
+            </select>
+          </div>
+        </div>
+        <div id="all-tasks-list" class="task-list-container"></div>
+      </section>
+
+      <!-- Section for Circular Tasks -->
+      <section class="task-section">
+        <h1 class="section-title">Circular Dependency Tasks</h1>
+        <div id="circular-tasks-list" class="task-list-container"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

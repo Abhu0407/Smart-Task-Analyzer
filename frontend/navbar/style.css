@@ -146,3 +146,25 @@ body {
     display: inline;
   }
 }
+
+/* Main Navigation Links */
+.main-nav {
+  display: none; /* Hidden by default, shown by JS */
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+}
+
+.nav-link {
+  font-size: 0.875rem; /* 14px */
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.nav-link.active {
+  font-weight: 600; /* semibold */
+}
