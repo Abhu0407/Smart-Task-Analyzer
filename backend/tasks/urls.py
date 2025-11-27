@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import tasks_view, delete_task, toggle_completed, completed_tasks, circular_tasks, pending_tasks, high_priority_tasks, tasks_by_date, tasks_with_dependencies, tasks_without_dependencies
+from .views import tasks_view, delete_task, toggle_completed, completed_tasks, circular_tasks, pending_tasks, high_priority_tasks, tasks_by_date, tasks_with_dependencies, tasks_without_dependencies, update_task
 
 urlpatterns = [
     path("", tasks_view, name="list-create-tasks"),
+    path("update/<int:task_id>/", update_task, name="update-task"),
     path("delete/<int:task_id>/", delete_task, name="delete-task"),
     path("toggle/<int:task_id>/", toggle_completed, name="toggle-completed"),
     path("completed/", completed_tasks, name="completed-tasks"),

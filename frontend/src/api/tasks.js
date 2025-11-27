@@ -58,3 +58,24 @@ export const toggleTaskCompleted = async (taskId) => {
   return response.data;
 };
 
+/**
+ * Get a single task by ID
+ */
+export const getTaskById = async (taskId) => {
+  const response = await axiosInstance.get(`${BASE_URL}/`);
+  const tasks = response.data;
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) {
+    throw new Error("Task not found");
+  }
+  return task;
+};
+
+/**
+ * Update a task
+ */
+export const updateTask = async (taskId, taskData) => {
+  const response = await axiosInstance.put(`${BASE_URL}/update/${taskId}/`, taskData);
+  return response.data;
+};
+

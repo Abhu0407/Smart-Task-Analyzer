@@ -1,7 +1,9 @@
-import { Trash2, CheckCircle2 } from "lucide-react";
+import { Trash2, CheckCircle2, Edit } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const TaskCard = ({ task, onDelete, onComplete, sortBy }) => {
+  const navigate = useNavigate();
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete task #${task.number}?`)) {
       try {
@@ -83,6 +85,14 @@ const TaskCard = ({ task, onDelete, onComplete, sortBy }) => {
         </div>
 
         <div className="flex flex-col gap-2">
+          <button
+            onClick={() => navigate(`/edit-task/${task.id}`)}
+            className="btn btn-sm btn-primary gap-2"
+            title="Edit task"
+          >
+            <Edit className="w-4 h-4" />
+            Edit
+          </button>
           <button
             onClick={handleComplete}
             className="btn btn-sm btn-success gap-2"

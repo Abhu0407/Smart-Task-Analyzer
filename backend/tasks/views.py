@@ -218,6 +218,138 @@ def tasks_view(request):
         }, status=201)
 
 @csrf_exempt
+def update_task(request, task_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Authentication required"}, status=401)
+    
+    user = request.user
+
+    if request.method != "PUT" and request.method != "PATCH":
+        return JsonResponse({"error": "PUT or PATCH method required"}, status=400)
+
+    try:
+        task = Task.objects.get(id=task_id, user=user)
+    except Task.DoesNotExist:
+        return JsonResponse({"error": "Task not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to retrieve task: {str(e)}"}, status=500)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    # Extract fields (all optional for update)
+    title = data.get("title")
+    due_date_str = data.get("due_date")
+    estimated_hours = data.get("estimated_hours")
+    importance = data.get("importance")
+    dependencies = data.get("dependencies")
+    number = data.get("number")
+
+    # Update fields if provided
+    if title is not None:
+        if not title.strip():
+            return JsonResponse({"error": "Title cannot be empty"}, status=400)
+        task.title = title.strip()
+
+    if due_date_str is not None:
+        try:
+            due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+            task.due_date = due_date
+        except (ValueError, TypeError):
+            return JsonResponse({"error": "Invalid date format. Use YYYY-MM-DD"}, status=400)
+
+    if estimated_hours is not None:
+        try:
+            estimated_hours = int(estimated_hours)
+            if estimated_hours <= 0:
+                return JsonResponse({"error": "Estimated hours must be a positive integer"}, status=400)
+            task.estimated_hours = estimated_hours
+        except (ValueError, TypeError):
+            return JsonResponse({"error": "Estimated hours must be a valid integer"}, status=400)
+
+    if importance is not None:
+        try:
+            importance = int(importance)
+            if importance < 1 or importance > 10:
+                return JsonResponse({"error": "Importance must be between 1 and 10"}, status=400)
+            task.importance = importance
+        except (ValueError, TypeError):
+            return JsonResponse({"error": "Importance must be a valid integer between 1 and 10"}, status=400)
+
+    # Handle task number update (must be unique per user)
+    if number is not None:
+        try:
+            number = int(number)
+            if number <= 0:
+                return JsonResponse({"error": "Task number must be a positive integer"}, status=400)
+            # Check if number already exists for another task
+            if Task.objects.filter(user=user, number=number).exclude(id=task.id).exists():
+                return JsonResponse({"error": "Task number already exists for this user"}, status=400)
+            task.number = number
+        except (ValueError, TypeError):
+            return JsonResponse({"error": "Task number must be a valid integer"}, status=400)
+
+    # Update dependencies if provided
+    if dependencies is not None:
+        if not isinstance(dependencies, list):
+            return JsonResponse({"error": "Dependencies must be a list"}, status=400)
+        
+        # Clear existing dependencies
+        task.dependencies.clear()
+        
+        # Add new dependencies
+        for dep_id in dependencies:
+            try:
+                dep_id = int(dep_id)
+                # Prevent self-dependency
+                if dep_id == task.id:
+                    return JsonResponse({"error": "Task cannot depend on itself"}, status=400)
+                dep_task = Task.objects.get(id=dep_id, user=user)
+                task.dependencies.add(dep_task)
+            except (Task.DoesNotExist, ValueError, TypeError):
+                return JsonResponse({"error": f"Dependency {dep_id} does not exist or is invalid"}, status=400)
+
+    try:
+        task.save()
+    except Exception as e:
+        return JsonResponse({"error": f"Failed to update task: {str(e)}"}, status=400)
+
+    # Recalculate circular dependency
+    if task.dependencies.exists():
+        task.circularTask = has_circular_dependency(task)
+    else:
+        task.circularTask = False
+
+    # Recompute scores
+    try:
+        task.priorityScore = calculate_priority_score(task)
+        task.smartPriorityScore = calculate_smart_score(task)
+    except Exception as e:
+        # If score calculation fails, keep existing scores
+        pass
+
+    task.save()
+
+    return JsonResponse({
+        "message": "Task updated successfully",
+        "task": {
+            "id": task.id,
+            "number": task.number,
+            "title": task.title,
+            "due_date": str(task.due_date),
+            "estimated_hours": task.estimated_hours,
+            "importance": task.importance,
+            "dependencies": list(task.dependencies.values_list("id", flat=True)),
+            "priorityScore": task.priorityScore,
+            "smartPriorityScore": task.smartPriorityScore,
+            "completed": task.completed,
+            "circularTask": task.circularTask,
+        }
+    })
+
+@csrf_exempt
 def delete_task(request, task_id):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Authentication required"}, status=401)

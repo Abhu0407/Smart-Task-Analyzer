@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AddTaskPage from "./pages/AddTaskPage";
+import EditTaskPage from "./pages/EditTaskPage";
 import CompletedTaskPage from "./pages/CompletedTaskPage";
 
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -46,6 +47,7 @@ const App = () => {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
         <Route path="/add-task" element={authUser ? <AddTaskPage /> : <Navigate to="/login" />} />
+        <Route path="/edit-task/:taskId" element={authUser ? <EditTaskPage /> : <Navigate to="/login" />} />
         <Route path="/completed" element={authUser ? <CompletedTaskPage /> : <Navigate to="/login" />} />
       </Routes>
 
