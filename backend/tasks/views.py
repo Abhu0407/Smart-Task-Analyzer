@@ -77,7 +77,7 @@ def tasks_view(request):
     # ---------------------- GET (List Tasks) ----------------------
     if request.method == "GET":
         try:
-            tasks = Task.objects.filter(user=user).order_by("-id")
+            tasks = Task.objects.filter(user=request.user).order_by("-id")
             data = [{
                 "id": t.id,
                 "number": t.number,

@@ -29,10 +29,10 @@ const EditTaskPage = () => {
     try {
       setIsLoadingTask(true);
       const task = await getTaskById(parseInt(taskId));
-      
+
       // Format date for input field (YYYY-MM-DD)
       const dueDate = task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : "";
-      
+
       setFormData({
         number: task.number ? String(task.number) : "",
         title: task.title || "",
@@ -119,13 +119,17 @@ const EditTaskPage = () => {
   };
 
   const handleDependencyChange = (e) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) =>
-      parseInt(option.value)
-    );
-    setFormData((prev) => ({
-      ...prev,
-      dependencies: selectedOptions,
-    }));
+    const { value, checked } = e.target;
+    const depId = parseInt(value);
+
+    setFormData((prev) => {
+      const currentDeps = prev.dependencies;
+      if (checked) {
+        return { ...prev, dependencies: [...currentDeps, depId] };
+      } else {
+        return { ...prev, dependencies: currentDeps.filter((id) => id !== depId) };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -191,9 +195,8 @@ const EditTaskPage = () => {
                 name="number"
                 value={formData.number}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.number ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.number ? "input-error" : ""
+                  }`}
                 placeholder="Enter task number (must be unique)"
                 disabled={isLoading}
                 min="1"
@@ -213,9 +216,8 @@ const EditTaskPage = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.title ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.title ? "input-error" : ""
+                  }`}
                 placeholder="Enter task title"
                 disabled={isLoading}
               />
@@ -234,9 +236,8 @@ const EditTaskPage = () => {
                 name="due_date"
                 value={formData.due_date}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.due_date ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.due_date ? "input-error" : ""
+                  }`}
                 disabled={isLoading}
               />
               {errors.due_date && (
@@ -254,9 +255,8 @@ const EditTaskPage = () => {
                 name="estimated_hours"
                 value={formData.estimated_hours}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.estimated_hours ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.estimated_hours ? "input-error" : ""
+                  }`}
                 placeholder="Enter estimated hours"
                 disabled={isLoading}
                 min="1"
@@ -277,9 +277,8 @@ const EditTaskPage = () => {
                 name="importance"
                 value={formData.importance}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.importance ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.importance ? "input-error" : ""
+                  }`}
                 placeholder="Enter importance (1-10)"
                 disabled={isLoading}
                 min="1"
@@ -295,26 +294,29 @@ const EditTaskPage = () => {
               <label className="label">
                 <span className="label-text font-medium">Dependencies</span>
               </label>
-              <select
-                multiple
-                value={formData.dependencies.map(String)}
-                onChange={handleDependencyChange}
-                className="select select-bordered w-full h-32"
+              <div
+                className="border border-base-300 rounded-lg p-2 h-32 overflow-y-auto space-y-2"
                 disabled={isLoading || availableTasks.length === 0}
               >
                 {availableTasks.length === 0 ? (
-                  <option disabled>No other tasks available</option>
+                  <div className="flex items-center justify-center h-full text-base-content/60">
+                    No other tasks available
+                  </div>
                 ) : (
                   availableTasks.map((task) => (
-                    <option key={task.id} value={task.id}>
-                      Task #{task.number}: {task.title} (ID: {task.id})
-                    </option>
+                    <label key={task.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-base-200 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        value={task.id}
+                        checked={formData.dependencies.includes(task.id)}
+                        onChange={handleDependencyChange}
+                        className="checkbox checkbox-primary"
+                      />
+                      <span>Task #{task.number}: {task.title}</span>
+                    </label>
                   ))
                 )}
-              </select>
-              <p className="text-xs text-base-content/60">
-                Hold Ctrl (or Cmd on Mac) to select multiple dependencies. Current task is excluded.
-              </p>
+              </div>
               {formData.dependencies.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.dependencies.map((depId) => {
@@ -368,4 +370,3 @@ const EditTaskPage = () => {
 };
 
 export default EditTaskPage;
-

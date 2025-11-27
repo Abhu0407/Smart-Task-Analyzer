@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Mail, User, Phone, Save } from "lucide-react";
-import { updateProfile, getCurrentUser } from "../api/profile";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
-  const { authUser } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const { authUser, updateProfile, isUpdatingProfile } = useAuthStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,24 +19,8 @@ const ProfilePage = () => {
         email: authUser.email || "",
         phone: authUser.phone || "",
       });
-    } else {
-      // Fetch user data if not in store
-      loadUserData();
     }
   }, [authUser]);
-
-  const loadUserData = async () => {
-    try {
-      const user = await getCurrentUser();
-      setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.phone || "",
-      });
-    } catch (error) {
-      toast.error("Failed to load user data");
-    }
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -78,22 +60,10 @@ const ProfilePage = () => {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      await updateProfile({
-        name: formData.name.trim(),
-        phone: formData.phone.trim() || null,
-      });
-      toast.success("Profile updated successfully");
-      // Reload user data to get updated info
-      await loadUserData();
-    } catch (error) {
-      toast.error(
-        error.response?.data?.error || "Failed to update profile"
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    await updateProfile({
+      name: formData.name.trim(),
+      phone: formData.phone.trim() || null,
+    });
   };
 
   return (
@@ -117,11 +87,10 @@ const ProfilePage = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.name ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.name ? "input-error" : ""
+                  }`}
                 placeholder="Enter your full name"
-                disabled={isLoading}
+                disabled={isUpdatingProfile}
               />
               {errors.name && (
                 <p className="text-error text-sm">{errors.name}</p>
@@ -159,11 +128,10 @@ const ProfilePage = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`input input-bordered w-full ${
-                  errors.phone ? "input-error" : ""
-                }`}
+                className={`input input-bordered w-full ${errors.phone ? "input-error" : ""
+                  }`}
                 placeholder="Enter your phone number (optional)"
-                disabled={isLoading}
+                disabled={isUpdatingProfile}
               />
               {errors.phone && (
                 <p className="text-error text-sm">{errors.phone}</p>
@@ -175,9 +143,9 @@ const ProfilePage = () => {
               <button
                 type="submit"
                 className="btn btn-primary gap-2"
-                disabled={isLoading}
+                disabled={isUpdatingProfile}
               >
-                {isLoading ? (
+                {isUpdatingProfile ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
                     Saving...

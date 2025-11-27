@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, Loader } from "lucide-react";
-import { getCompletedTasks } from "../api/tasks";
+import { ArrowLeft, CheckCircle2, Loader, RotateCcw } from "lucide-react";
+import { getCompletedTasks, toggleTaskCompleted } from "../api/tasks";
 import toast from "react-hot-toast";
 
 const CompletedTaskPage = () => {
@@ -23,6 +23,16 @@ const CompletedTaskPage = () => {
       console.error("Error loading completed tasks:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleMarkIncomplete = async (taskId) => {
+    try {
+      await toggleTaskCompleted(taskId);
+      toast.success("Task marked as incomplete");
+      loadCompletedTasks(); // Refresh the list
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to update task");
     }
   };
 
@@ -79,6 +89,15 @@ const CompletedTaskPage = () => {
                       )}
                     </div>
                   </div>
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => handleMarkIncomplete(task.id)}
+                      className="btn btn-sm btn-ghost gap-2"
+                      title="Mark as incomplete"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -90,4 +109,3 @@ const CompletedTaskPage = () => {
 };
 
 export default CompletedTaskPage;
-
