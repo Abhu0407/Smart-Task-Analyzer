@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, CheckSquare, Settings, User, Home } from "lucide-react";
+import { LogOut, CheckSquare, Settings, User, Home, LayoutGrid  } from "lucide-react";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
@@ -27,6 +27,10 @@ const Navbar = () => {
                 <Link to="/" className="btn btn-sm btn-ghost gap-2">
                   <Home className="w-4 h-4" />
                   <span className="hidden sm:inline">Home</span>
+                </Link>
+                <Link to="/matrix" className="btn btn-sm btn-ghost gap-2">
+                  <LayoutGrid className="w-4 h-4" />
+                  <span className="hidden sm:inline">Matrix</span>
                 </Link>
                 <Link to="/completed" className="btn btn-sm btn-ghost gap-2">
                   <CheckSquare className="w-4 h-4" />

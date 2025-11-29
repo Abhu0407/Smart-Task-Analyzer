@@ -8,6 +8,8 @@ import ProfilePage from "./pages/ProfilePage";
 import AddTaskPage from "./pages/AddTaskPage";
 import EditTaskPage from "./pages/EditTaskPage";
 import CompletedTaskPage from "./pages/CompletedTaskPage";
+import GraphVisualizationPage from "./pages/GraphVisualizationPage";
+import EisenhowerMatrixPage from "./pages/EisenhowerMatrixPage";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
@@ -54,6 +56,11 @@ const App = () => {
         <Route path="/add-task" element={authUser ? <AddTaskPage /> : <Navigate to="/login" />} />
         <Route path="/edit-task/:taskId" element={authUser ? <EditTaskPage /> : <Navigate to="/login" />} />
         <Route path="/completed" element={authUser ? <CompletedTaskPage /> : <Navigate to="/login" />} />
+        <Route path="/graph" element={<GraphVisualizationPage />} />
+        <Route
+          path='/matrix'
+          element={authUser ? <EisenhowerMatrixPage /> : <Navigate to='/login' />}
+        />
       </Routes>
 
       <Toaster />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Loader } from "lucide-react";
+import { Plus, Loader, GitMerge } from "lucide-react";
 import { getIncompleteTasks, getCircularTasks, deleteTask, toggleTaskCompleted } from "../api/tasks";
 import TaskCard from "../components/TaskCard";
 import CircularGroup from "../components/CircularGroup";
@@ -124,15 +124,24 @@ const HomePage = () => {
     <div className="min-h-screen pt-20 pb-8 bg-base-200">
       <div className="container mx-auto px-4">
         {/* Header with Add Task Button */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
           <h1 className="text-3xl font-bold">Task Dashboard</h1>
-          <button
-            onClick={() => navigate("/add-task")}
-            className="btn btn-primary gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Task
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate("/graph")}
+              className="btn btn-secondary gap-2"
+            >
+              <GitMerge className="w-5 h-5" />
+              View Graph
+            </button>
+            <button
+              onClick={() => navigate("/add-task")}
+              className="btn btn-primary gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Add Task
+            </button>
+          </div>
         </div>
 
         {/* Section 1: Incomplete Tasks */}

@@ -5,6 +5,10 @@ from datetime import date, datetime
 
 from .models import Task
 
+# Import the notification utility function
+# Assuming utils.py is in the same 'tasks' app directory
+from .utils import check_and_send_due_notifications
+
 
 # -----------------------------------
 # Helper: Circular dependency check
@@ -77,7 +81,14 @@ def tasks_view(request):
     # ---------------------- GET (List Tasks) ----------------------
     if request.method == "GET":
         try:
-            tasks = Task.objects.filter(user=request.user).order_by("-id")
+            tasks = Task.objects.filter(user=user).order_by("-id")
+
+            # --- NOTIFICATION CHECK ---
+            # Iterate over incomplete tasks to check for due dates
+            for task in tasks.filter(completed=False):
+                check_and_send_due_notifications(task)
+            # --- END NOTIFICATION CHECK ---
+
             data = [{
                 "id": t.id,
                 "number": t.number,
@@ -198,6 +209,9 @@ def tasks_view(request):
             task.smartPriorityScore = 0.0
 
         task.save()
+
+        # --- NOTIFICATION CHECK ---
+        check_and_send_due_notifications(task)
 
         return JsonResponse({
             "message": "Task created successfully",
@@ -331,6 +345,9 @@ def update_task(request, task_id):
         pass
 
     task.save()
+
+    # --- NOTIFICATION CHECK ---
+    check_and_send_due_notifications(task)
 
     return JsonResponse({
         "message": "Task updated successfully",
