@@ -12,6 +12,19 @@ The project is built with a React frontend and a Django backend.
 *   **Eisenhower Matrix**: A drag-and-drop interface to categorize tasks into four quadrants: Do, Plan, Delegate, and Eliminate, based on urgency and importance.
 *   **CRUD Functionality**: Full capabilities to create, read, update, and delete tasks.
 
+## Technical Requirements
+
+### Backend
+
+- Python (3.x recommended)
+- `pip` (Python package installer)
+- A virtual environment tool (e.g., `venv`)
+
+### Frontend
+
+- Node.js (LTS version recommended)
+- `npm` (Node Package Manager)
+
 ## Setup Instructions
 
 To get the Smart Task Analyzer running on your local machine, follow these steps for both the backend and frontend.
